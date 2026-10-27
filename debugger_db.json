@@ -1,0 +1,323 @@
+{
+  "breakpoints": [
+    {
+      "script": "demo.py",
+      "kind": "line",
+      "target": "",
+      "line": 4,
+      "condition": "",
+      "language": "python",
+      "enabled": true,
+      "note": "",
+      "hits": 1,
+      "created": "2026-09-16 14:56:24",
+      "resolved": [
+        {
+          "line": 4,
+          "kind": "line",
+          "name": "line 4"
+        }
+      ]
+    },
+    {
+      "script": "demo.py",
+      "kind": "function",
+      "target": "f",
+      "line": 0,
+      "condition": "",
+      "language": "python",
+      "enabled": true,
+      "note": "",
+      "hits": 1,
+      "created": "2026-09-16 14:56:24",
+      "resolved": [
+        {
+          "line": 3,
+          "kind": "block",
+          "name": "f"
+        }
+      ]
+    },
+    {
+      "script": "demo.py",
+      "kind": "class",
+      "target": "",
+      "line": 0,
+      "condition": "",
+      "language": "python",
+      "enabled": true,
+      "note": "",
+      "hits": 0,
+      "created": "2026-09-16 14:56:24",
+      "resolved": []
+    },
+    {
+      "script": "demo.py",
+      "kind": "block",
+      "target": "loop",
+      "line": 0,
+      "condition": "",
+      "language": "python",
+      "enabled": true,
+      "note": "",
+      "hits": 1,
+      "created": "2026-09-16 14:56:24",
+      "resolved": [
+        {
+          "line": 5,
+          "kind": "block",
+          "name": "i in x:"
+        }
+      ]
+    },
+    {
+      "script": "demo.py",
+      "kind": "condition",
+      "target": "",
+      "line": 6,
+      "condition": "i>3",
+      "language": "python",
+      "enabled": true,
+      "note": "",
+      "hits": 1,
+      "created": "2026-09-16 14:56:24",
+      "resolved": [
+        {
+          "line": 6,
+          "kind": "condition",
+          "name": "line 6"
+        }
+      ]
+    },
+    {
+      "script": "demo.py",
+      "kind": "variable",
+      "target": "total",
+      "line": 0,
+      "condition": "",
+      "language": "python",
+      "enabled": true,
+      "note": "",
+      "hits": 1,
+      "created": "2026-09-16 14:56:24",
+      "resolved": [
+        {
+          "line": 4,
+          "kind": "variable",
+          "name": "total"
+        }
+      ]
+    },
+    {
+      "script": "demo.py",
+      "kind": "exception",
+      "target": "ValueError",
+      "line": 0,
+      "condition": "",
+      "language": "python",
+      "enabled": true,
+      "note": "",
+      "hits": 1,
+      "created": "2026-09-16 14:56:24",
+      "resolved": [
+        {
+          "line": 7,
+          "kind": "exception",
+          "name": "ValueError"
+        }
+      ]
+    },
+    {
+      "script": "demo.py",
+      "kind": "file",
+      "target": "config.json",
+      "line": 0,
+      "condition": "",
+      "language": "python",
+      "enabled": true,
+      "note": "",
+      "hits": 0,
+      "created": "2026-09-16 14:56:24",
+      "resolved": []
+    },
+    {
+      "script": "demo.py",
+      "kind": "import",
+      "target": "",
+      "line": 0,
+      "condition": "",
+      "language": "python",
+      "enabled": true,
+      "note": "",
+      "hits": 1,
+      "created": "2026-09-16 14:56:24",
+      "resolved": [
+        {
+          "line": 1,
+          "kind": "import",
+          "name": "os"
+        }
+      ]
+    }
+  ],
+  "watches": [],
+  "trace": [
+    {
+      "action": "start",
+      "detail": "[Python]",
+      "at": "2026-09-16 14:08:10"
+    },
+    {
+      "action": "start",
+      "detail": "[Python]",
+      "at": "2026-09-16 14:08:31"
+    },
+    {
+      "action": "start",
+      "detail": "[Python]",
+      "at": "2026-09-16 14:08:54"
+    },
+    {
+      "action": "start",
+      "detail": "[Python]",
+      "at": "2026-09-16 14:09:29"
+    },
+    {
+      "action": "start",
+      "detail": "[Python]",
+      "at": "2026-09-16 14:12:21"
+    },
+    {
+      "action": "start",
+      "detail": "[Python]",
+      "at": "2026-09-16 14:13:08"
+    },
+    {
+      "action": "start",
+      "detail": "[Python]",
+      "at": "2026-09-16 14:13:26"
+    },
+    {
+      "action": "start",
+      "detail": "[Python]",
+      "at": "2026-09-16 14:14:45"
+    },
+    {
+      "action": "start",
+      "detail": "[Python]",
+      "at": "2026-09-16 14:15:10"
+    },
+    {
+      "action": "start",
+      "detail": "[Python]",
+      "at": "2026-09-16 14:40:10"
+    },
+    {
+      "action": "start",
+      "detail": "[Python]",
+      "at": "2026-09-16 14:40:42"
+    },
+    {
+      "action": "start",
+      "detail": "[Python]",
+      "at": "2026-09-16 16:24:55"
+    },
+    {
+      "action": "start",
+      "detail": "[Python]",
+      "at": "2026-09-16 17:19:34"
+    }
+  ],
+  "engines": [
+    "python"
+  ],
+  "validation": {
+    "config.json": {
+      "language": "json",
+      "ok": true,
+      "error": "",
+      "line": 0,
+      "column": 0,
+      "summary": "valid JSON (dict, 2 key(s))",
+      "document": true,
+      "at": "2026-09-16 17:19:34"
+    },
+    "broken.py": {
+      "language": "python",
+      "ok": false,
+      "error": "SyntaxError: invalid syntax",
+      "line": 1,
+      "column": 7,
+      "summary": "syntax error at line 1",
+      "document": false,
+      "at": "2026-09-16 17:19:34"
+    },
+    "demo": {
+      "language": "python",
+      "ok": true,
+      "error": "",
+      "line": 0,
+      "column": 0,
+      "summary": "1 function(s), 0 class(es), syntax ok",
+      "document": false,
+      "at": "2026-09-16 17:19:34"
+    }
+  },
+  "flow": [
+    {
+      "script": "demo",
+      "language": "python",
+      "label": "Python",
+      "started": "2026-09-17 06:32:17",
+      "finished": "2026-09-17 06:32:17",
+      "truncated": false,
+      "counts": {
+        "step": 2,
+        "block": 1,
+        "call": 0,
+        "method": 0,
+        "import": 0,
+        "variable": 0,
+        "exception": 0,
+        "error": 0,
+        "warning": 0,
+        "log": 0
+      },
+      "events": [
+        {
+          "index": 1,
+          "line": 1,
+          "kind": "step",
+          "block": "",
+          "depth": 0,
+          "name": "",
+          "detail": "def a():",
+          "source": "marker",
+          "at": "2026-09-17 06:32:17"
+        },
+        {
+          "index": 2,
+          "line": 1,
+          "kind": "block",
+          "block": "def",
+          "depth": 0,
+          "name": "a",
+          "detail": "def a():",
+          "source": "marker",
+          "at": "2026-09-17 06:32:17"
+        },
+        {
+          "index": 3,
+          "line": 2,
+          "kind": "step",
+          "block": "",
+          "depth": 0,
+          "name": "",
+          "detail": "return 7",
+          "source": "marker",
+          "at": "2026-09-17 06:32:17"
+        }
+      ]
+    }
+  ]
+}

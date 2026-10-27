@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="screenshot.png" alt="ScriptDB screenshot" />
+</p>
+
 # ScriptDB
 
 > A self-contained PyQt5 desktop application for storing, editing, searching,
@@ -5,7 +9,7 @@
 > languages, with a pluggable syntax layer, pluggable search engine and full
 > code navigation.
 
-ScriptDB v2.5 keeps every snippet you want to remember in one JSON database, then
+ScriptDB v2.7 keeps every snippet you want to remember in one JSON database, then
 gives you a real editing surface for it: syntax colouring, smart suggestions,
 sixteen ways of searching across the whole library, ten ways of jumping around
 the code, an isolated sandbox to run a script in, a hardening toolkit that
@@ -54,8 +58,7 @@ Sixteen tabs, each one file in `tabs/`, talking to a UI-free engine.
 
 | Area | What you get |
 |---|---|
-| **Library** | Store scripts with name, category, tags, description and edit history. Favourites, search/filter, import & export, row numbering. Importing a file, a folder or a JSON export assigns the category/language from the file extension automatically. |
-| **Run** | One `Run...` button, like `Import...`, whose menu holds both ways to execute: in the runner window (live output, stdin, stop, 300 s timeout) or in a new console window. The script context menu offers the same two entries under `Run...`. |
+| **Library** | Store scripts with name, category, tags, description and edit history. Favourites, search/filter, import & export, row numbering. |
 | **Editor** | Syntax colouring for 13 languages, line numbers, ASCII minimap, bracket-pair highlight, smart indent, auto-close, smart suggestions, dark/light/low-graphics themes, find & replace with regex. |
 | **Search** | Sixteen search kinds run over the whole database, a selection, the open buffer, a directory (recursive) or every open project/workspace — text, string (word/line/prefix/suffix), regex, multiline, multi-file, directory, workspace, semantic, imports, blocks, comments, AST, calls, definitions, references, TODO/FIXME. |
 | **Navigation** | Ten code jumps — definition, reference, import, class, function, variable, error, warning, section, enclosing block — plus `F12`, `Ctrl+Click`, `Alt`+arrow shortcuts and a jump-to-problem button. |
@@ -68,7 +71,7 @@ Sixteen tabs, each one file in `tabs/`, talking to a UI-free engine.
 | **Databases** | A SQLite workbench with an offline data layer, an online data layer and a sync layer joining them. |
 | **Diff** | A side-by-side and unified diff view, also drivable from the command line. |
 | **Metadata** | Read, validate and bulk-write the header metadata block that lives inside the script files. |
-| **i18n** | Full English and Polish translation tables. The choice is remembered across restarts. |
+| **i18n** | Full English and Polish translation tables. |
 | **Hot-plugging** | Add a language, a search kind or a navigation scanner at run time without editing the GUI. |
 
 ---
@@ -81,7 +84,7 @@ own module in `tabs/`. The order matches the running application:
 | # | Tab | Module | Purpose |
 |---|---|
 | 0 | **Scripts** | `sdb_scripts.py` | The library: list, filter, create, edit metadata, import/export. |
-| 1 | **Apps** | `tabs/apps.py` | A personal launcher with original system icons, groups, popup folders, grid/list views, sorting, search and icon sizing. |
+| 1 | **Apps** | `tabs/apps.py` | A personal launcher with original system icons, groups, popup folders, grid/list views, sorting, search and icon sizing. In Windows, Python scripts (.py) are automatically launched via the official Python launcher `py.exe` for reliable execution. |
 | 2 | **Editor** | `tabs/editor.py` | Edit one script at a time; search and navigate within it. |
 | 3 | **Analyzer** | `tabs/analyzer.py` | Quality and structure analysis of the scripts. |
 | 4 | **Audit** | `tabs/audit.py` | Event timeline of everything that changed. |
@@ -100,30 +103,6 @@ own module in `tabs/`. The order matches the running application:
 The **ToDo** workspace opens in a separate window. Its internal views include
 Calendar, Tasks, Editor, Plan, Notes, Expenses and Shopping; the shopping list
 keeps its data in `shopping_db.json`.
-
-### How an imported script gets its category
-
-Every import path (`Import... ▸ Source file(s)...`, `Import... ▸ Whole folder...`
-and the JSON export) puts a script in the right language by itself. The name
-decides first, because a file name is the strongest signal about what a script
-is — `deploy.ps1` is PowerShell whatever the first line looks like:
-
-1. **the extension** — the canonical table (`.py`, `.sh`, `.ps1`, `.vbs`, `.js`,
-   `.java`, `.cpp`, `.bat`, `.html`, `.hta`, `.reg`, `.json`, `.yaml`, `.ini`,
-   `.cfg`, `.sql`, `.rb`) and then the alias table (`.pyw`, `.bash`, `.zsh`,
-   `.cmd`, `.ts`, `.mjs`, `.htm`, `.h`, `.hpp`, `.yml`, `.toml`, `.inf`, `.env`,
-   `.rake`, `.sqlite`, `.wsf`, …);
-2. **the content** — when the extension is missing or unfamiliar: a `#!` shebang
-   (`bash` → Bash, `python` → Python), `<html>` → HTML, `<HTA:APPLICATION>` →
-   HTA, `Windows Registry Editor` → Registry, `SELECT`/`CREATE TABLE` → SQL,
-   `Write-Host` → PowerShell, `@echo off` → Batch, `console.log` →
-   JavaScript, `public static void main` → Java, `#include <` → C++,
-   `Option Explicit` → VBScript, `import`/`def` → Python, a JSON document → JSON;
-3. **`Other`** — when neither says anything.
-
-A category the import carried itself is always kept, including one that is not in
-the list (it is added to the list rather than discarded), so a hand-made export
-never loses its grouping.
 
 ---
 
@@ -668,75 +647,16 @@ metadata change is made.
 | `MetadataTab(window)` | Scan a folder, show the header table, edit and validate in bulk, and export. |
 
 ## Project layout
-
-### Where the program stores its files
-
-The application ships as a single frozen executable, so the folder it sits in is
-never used for data. The locations are fixed and always belong to the user
-running the program, so an exe handed to somebody else writes under their
-profile and not yours. There are two levels:
-
-```
-%APPDATA%\.polsoft\ScriptDB\        = C:\Users\<userprofile>\AppData\Roaming\.polsoft\ScriptDB\
-%APPDATA%\.polsoft\ScriptDB\db\     the databases
-```
-
-The profile folder is read from `%APPDATA%` and `%USERPROFILE%` (with
-`%HOMEDRIVE%%HOMEPATH%` and `~` as fallbacks), so a local account, a domain
-account and a redirected profile all resolve correctly. On Linux and macOS the
-same two levels sit below `%XDG_DATA_HOME%` instead.
-
-The `db` folder holds everything that is program state: `scripts_db.json`,
-`settings_db.json`, `connections_db.json`, `todo_db.json`, `shopping_db.json`,
-`apps_db.json`, `debugger_db.json`, `batch_templates.json`, `docs_db.sqlite`,
-the audit log and timeline, and the `vault\`, `security\` and `structure\`
-subfolders.
-
-`settings_db.json` is the one that makes the program *yours*. It is written on
-every change and read back before any widget is built, so a restart brings back:
-
-| Setting | Key | Note |
-|---|---|---|
-| Language | `lang` | `en` / `pl`, the button in the top bar |
-| Colour theme | `theme` | Dark, Light or Monochrome |
-| Compact layout | `compact_ui` | Denser spacing throughout the window |
-| Window geometry and tab layout | `window_geometry` | Size, position and the tab strip order |
-| Tab left open | `last_tab` | The program opens where you were working |
-| Filter text and favourites-only | `filter_text`, `filter_favorites` | The list opens on the view you were looking at |
-| Sort direction | `sort_ascending` | A-Z or Z-A |
-| Visible columns, group by category, separators, zebra stripes, row numbers | `columns`, `group_by_category`, `separators_enabled`, … | The list layout |
-
-`settings_db.json` is plain JSON, so it can be edited by hand. Every value is
-checked on load — wrong type, or an unknown language code, and the default is
-used instead. A hand-edited file can therefore never stop the program starting.
-
-The folder above it holds what the program produces: `reports\`, `exports\`,
-`audit_exports\`, `analyzer_exports\`, `config_snapshots\`, `audit_snapshots\`,
-`snapshots\`, the diff and search output, and the code-flow traces.
-
-Both folders are created on first run and the databases bundled in the exe are
-copied into `db\` only when they are not already there, so an existing
-installation is never overwritten.
-
-`app_paths.py` is the single place that knows these locations (`data_dir()`,
-`db_dir()`, `ensure_data_dir()`, `ensure_db_dir()`, `data_file()`,
-`db_file()`, `seed_data_dir()`, and `user_profile_dir()` / `roaming_app_data()`
-for the profile behind them). Nothing else in the program computes a data folder
-of its own.
-
-### Source tree
-
 ```
 sdb-new/
-├── sdb_scripts.py            # main window, Scripts tab, Diff tab, CLI entry point
-├── app_paths.py              # the application data folder (all runtime files)
+├── sdb_scripts.py            # main window, Scripts tab, Diff tab, translations, CLI entry point
 ├── scripts_db.json           # the script library (created on first run)
 ├── connections_db.json       # saved connections (created on first run)
 ├── settings_db.json          # window settings (created on first run)
 ├── audit_timeline.json       # the audit event log
 ├── debugger_db.json          # the debugger session store
 ├── docs_db.sqlite            # the DOCs document repository (created on first run)
-├── run_checks.ps1            # run every automated check (tests, verifications, syntax)
+├── REPO_MAP.md               # auto-generated repository outline
 ├── README.md                 # this file
 ├── builder/                  # PyInstaller build (build.bat, ScriptDB.spec, sdb.ico)
 ├── reports/                  # generated report artifacts (created on first run)

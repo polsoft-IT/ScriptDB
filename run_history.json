@@ -1,0 +1,332 @@
+[
+ {
+  "title": "example",
+  "language": "vbscript",
+  "args": "",
+  "status": "ok",
+  "exit_code": 0,
+  "elapsed": 1.31,
+  "timestamp": "2026-10-27 06:58:31",
+  "output": "Rozpoczynanie skryptu VBScript...\nSkrypt VBScript zako�\"czony. Kliknij OK, aby zamkn�\u0007��.\n\n[exit code 0 - finished in 1.31s]\n"
+ },
+ {
+  "title": "PowerShell Script Runner Pro",
+  "language": "powershell",
+  "args": "",
+  "status": "ok",
+  "exit_code": 0,
+  "elapsed": 3.39,
+  "timestamp": "2026-10-25 17:25:04",
+  "output": "Cancel\n\n[exit code 0 - finished in 3.39s]\n"
+ },
+ {
+  "title": "supported_script_templates",
+  "language": "other",
+  "args": "",
+  "status": "error",
+  "exit_code": null,
+  "elapsed": 0.0,
+  "timestamp": "2026-10-23 21:55:52",
+  "output": ""
+ },
+ {
+  "title": "example",
+  "language": "hta",
+  "args": "",
+  "status": "error",
+  "exit_code": null,
+  "elapsed": 0.0,
+  "timestamp": "2026-10-23 17:31:28",
+  "output": ""
+ },
+ {
+  "title": "example",
+  "language": "hta",
+  "args": "",
+  "status": "error",
+  "exit_code": null,
+  "elapsed": 0.0,
+  "timestamp": "2026-10-23 13:20:00",
+  "output": ""
+ },
+ {
+  "title": "example",
+  "language": "javascript",
+  "args": "",
+  "status": "error",
+  "exit_code": null,
+  "elapsed": 0.0,
+  "timestamp": "2026-10-23 13:18:40",
+  "output": ""
+ },
+ {
+  "title": "example",
+  "language": "html",
+  "args": "",
+  "status": "unavailable",
+  "exit_code": null,
+  "elapsed": 0.0,
+  "timestamp": "2026-10-23 12:49:13",
+  "output": ""
+ },
+ {
+  "title": "example",
+  "language": "java",
+  "args": "",
+  "status": "error",
+  "exit_code": null,
+  "elapsed": 0.0,
+  "timestamp": "2026-10-23 12:48:45",
+  "output": ""
+ },
+ {
+  "title": "example",
+  "language": "html",
+  "args": "",
+  "status": "unavailable",
+  "exit_code": null,
+  "elapsed": 0.0,
+  "timestamp": "2026-10-23 12:48:26",
+  "output": ""
+ },
+ {
+  "title": "example",
+  "language": "hta",
+  "args": "",
+  "status": "error",
+  "exit_code": 1,
+  "elapsed": 0.1,
+  "timestamp": "2026-10-23 12:48:17",
+  "output": "Detected language: vbscript\n"
+ },
+ {
+  "title": "example",
+  "language": "html",
+  "args": "",
+  "status": "unavailable",
+  "exit_code": null,
+  "elapsed": 0.0,
+  "timestamp": "2026-10-23 12:35:33",
+  "output": ""
+ },
+ {
+  "title": "example",
+  "language": "hta",
+  "args": "",
+  "status": "error",
+  "exit_code": 1,
+  "elapsed": 0.37,
+  "timestamp": "2026-10-23 12:35:29",
+  "output": "Detected language: vbscript\nB��d wej�cia: Brak aparatu skrypt�w dla plik�w o rozszerzeniu \".hta\".\n"
+ },
+ {
+  "title": "example",
+  "language": "html",
+  "args": "",
+  "status": "error",
+  "exit_code": 1,
+  "elapsed": 0.26,
+  "timestamp": "2026-10-23 11:47:16",
+  "output": "No dedicated runner for this language; running as Python.\n"
+ },
+ {
+  "title": "example",
+  "language": "hta",
+  "args": "",
+  "status": "error",
+  "exit_code": 1,
+  "elapsed": 0.26,
+  "timestamp": "2026-10-23 11:47:05",
+  "output": "No dedicated runner for this language; running as Python.\n  File \"C:\\Users\\max\\AppData\\Local\\Temp\\tmpinwwxg78.py\", line 1\n    <html>\n    ^\nSyntaxError: invalid syntax\n"
+ },
+ {
+  "title": "example",
+  "language": "batch",
+  "args": "",
+  "status": "stopped",
+  "exit_code": null,
+  "elapsed": 2.4,
+  "timestamp": "2026-10-23 11:47:03",
+  "output": "Rozpoczynam skrypt BATCH...\nDane przetworzone pomyślnie.\n"
+ },
+ {
+  "title": "example",
+  "language": "hta",
+  "args": "",
+  "status": "error",
+  "exit_code": 1,
+  "elapsed": 0.24,
+  "timestamp": "2026-10-23 11:20:46",
+  "output": "No dedicated runner for this language; running as Python.\n  File \"C:\\Users\\max\\AppData\\Local\\Temp\\tmpnjtbvlmb.py\", line 1\n    <html>\n    ^\nSyntaxError: invalid syntax\n"
+ },
+ {
+  "title": "example",
+  "language": "batch",
+  "args": "",
+  "status": "stopped",
+  "exit_code": null,
+  "elapsed": 2.03,
+  "timestamp": "2026-10-23 11:20:42",
+  "output": "Rozpoczynam skrypt BATCH...\nDane przetworzone pomyślnie.\n"
+ },
+ {
+  "title": "supported_extensions",
+  "language": "other",
+  "args": "",
+  "status": "error",
+  "exit_code": 1,
+  "elapsed": 0.26,
+  "timestamp": "2026-10-23 11:20:31",
+  "output": "No dedicated runner for this language; running as Python.\n  File \"C:\\Users\\max\\AppData\\Local\\Temp\\tmpb7xz4vpe.py\", line 1\n    Lista rozszerzeń plików obsługiwanych przez ScriptDB\n          ^^^^^^^^^^\nSyntaxError: invalid syntax\n"
+ },
+ {
+  "title": "Earth",
+  "language": "batch",
+  "args": "",
+  "status": "stopped",
+  "exit_code": null,
+  "elapsed": 3.2,
+  "timestamp": "2026-10-23 07:50:19",
+  "output": "                 -N.   -`                                       ```````````-N@/                   \n                   o@/                                         ```.````````.+@y                    \n                    s@y.                                       ````````````y@y                     \n                     +@N:                                     ```````````.h@s                      \n                      -@N.                                   ```````````:@@:                       \n                        +d/    .+                          ```````````-sNo`                        \n                         `+h/ `/-                          `````````/h@o`                          \n                            :ss:                         ````````.ody/                             \n                              `/ss+-                   ```````-+ss/`                               \n                                  ./ooo+:-`        `.`.-:/osso/.                                   \n                                       `-:+oooosyyyhyso+/-`                                        \n\f                                        .-/+oooooooooo+/:.                                         \n                                  `:oy@Nds+:os@@dsshdodN@NN@so:`                                   \n                               :oyd+:--.   ss/```./oN@@@@@N@Nsydys:                                \n                            -ss/-.                   -ohN@@@@@@@@hNNy:                             \n                          /h+`                          `d@@@@@@@@@@@@@+`                          \n                        /h/                              .N@@@@@@@@@@@@hh+                         \n                      .h+                                  `hddN@@@@@@@@++h-                       \n                     /h.                                      :yy@@@@dhyo:.ho                      \n                    oy`                                       ./odNN@@.``::`ss                     \n                   +h                                           .::/@@s`.y.`-hs                    \n                  -@`                                            ```---y@s-.`-d:                   \n                  h/                                             ``````....d../@                   \n                 .N                                              ```````````+h@@:                  \n                 /h                                              ``.`````````:@@o                  \n                 oy                                              ````````````y@@y                  \n                 +N+                                             ````````````h@@s                  \n                 .N+                                             ```````````.N@@:                  \n                  ds                                             ```````````.d@@                   \n                  -@/    :`                                    ` ````````````y@/                   \n                   o@y`                                        ```.`````````-@y                    \n                    s@N/                                      `````````````/Ny                     \n                     +@@h`                                    ````````````+Ns                      \n                      -@@o                                   ```````````.y@:                       \n                        +@+`    -+                         ```````````.o@o`                        \n                         `+h/  ./.                         `````````-y@o`                          \n                            :ss:                         `````````/hh/                             \n                              `/ss+-                   ```````-+ss/`                               \n                                  ./ooo+/-`        `...-:/osso/.                                   \n                                       `-:+oooosyyyyyso+/-`                                        \n"
+ },
+ {
+  "title": "Registry Viewer",
+  "language": "powershell",
+  "args": "",
+  "status": "ok",
+  "exit_code": 0,
+  "elapsed": 4.32,
+  "timestamp": "2026-10-23 07:26:34",
+  "output": "Add-Type: \nLine |\n  22 |  Add-Type -AssemblyName Microsoft.Win32\n     |  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n     | Nie mo�na odnale�� �cie�ki \"V:\\.project\\ScriptDB v2.7\\Microsoft.Win32.dll\", poniewa� nie istnieje.\nCancel\n"
+ },
+ {
+  "title": "example",
+  "language": "python",
+  "args": "",
+  "status": "ok",
+  "exit_code": 0,
+  "elapsed": 0.2,
+  "timestamp": "2026-10-23 07:26:16",
+  "output": "Rozpoczynanie skryptu Python...\nPrzetwarzanie danych: Przykład danych\n"
+ },
+ {
+  "title": "example",
+  "language": "hta",
+  "args": "",
+  "status": "error",
+  "exit_code": 1,
+  "elapsed": 0.24,
+  "timestamp": "2026-10-23 07:26:00",
+  "output": "No dedicated runner for this language; running as Python.\n"
+ },
+ {
+  "title": "Launcher Skryptów",
+  "language": "powershell",
+  "args": "",
+  "status": "ok",
+  "exit_code": 0,
+  "elapsed": 210.14,
+  "timestamp": "2026-10-23 07:25:45",
+  "output": "OK\nCancel\n"
+ },
+ {
+  "title": "Service Auto‑Recovery Tool",
+  "language": "powershell",
+  "args": "",
+  "status": "ok",
+  "exit_code": 0,
+  "elapsed": 5.02,
+  "timestamp": "2026-10-23 07:11:05",
+  "output": "Stopped\nCancel\n"
+ },
+ {
+  "title": "Admin Control Panel",
+  "language": "powershell",
+  "args": "",
+  "status": "ok",
+  "exit_code": 0,
+  "elapsed": 5.01,
+  "timestamp": "2026-10-23 06:37:04",
+  "output": "Cancel\n"
+ },
+ {
+  "title": "example",
+  "language": "batch",
+  "args": "",
+  "status": "stopped",
+  "exit_code": null,
+  "elapsed": 2.86,
+  "timestamp": "2026-10-23 06:36:34",
+  "output": "Rozpoczynam skrypt BATCH...\nDane przetworzone pomyślnie.\n"
+ },
+ {
+  "title": "example",
+  "language": "batch",
+  "args": "",
+  "status": "stopped",
+  "exit_code": null,
+  "elapsed": 3.14,
+  "timestamp": "2026-10-23 06:31:48",
+  "output": "Rozpoczynam skrypt BATCH...\nDane przetworzone pomyślnie.\n"
+ },
+ {
+  "title": "supported_extensions",
+  "language": "other",
+  "args": "",
+  "status": "error",
+  "exit_code": 1,
+  "elapsed": 0.27,
+  "timestamp": "2026-10-23 06:31:38",
+  "output": "No dedicated runner for this language; running as Python.\n"
+ },
+ {
+  "title": "example",
+  "language": "java",
+  "args": "",
+  "status": "error",
+  "exit_code": 1,
+  "elapsed": 0.27,
+  "timestamp": "2026-10-23 06:31:33",
+  "output": "No dedicated runner for this language; running as Python.\n"
+ },
+ {
+  "title": "Earth",
+  "language": "batch",
+  "args": "",
+  "status": "stopped",
+  "exit_code": null,
+  "elapsed": 1.98,
+  "timestamp": "2026-10-23 04:51:38",
+  "output": "                 -@`                   -:d@@@@@@@@@@@@@@@@d    `````````````y@/                   \n                   oy                     ..h@@@@@@@@@@@@@@o   ````.````````.@y                    \n                    sy                    /N@@@@@@@@@@@d:.    `````````````.dy                     \n                     +h`                  .@@@@@@@@@@@h:       ```````````.ds                      \n                      -h/                  d@@@@@@@d+-       ````````````/d:                       \n                        +h:                +@@@@@d-.        ```````````:yo`                        \n                         `+y/             .o@@@            ``````````/yo`                          \n                            :ss:           yN@.          `````````:sy/                             \n                              `/ss+-        .-         ```````-+ss/`                               \n                                  ./ooo+:-````:/+.. ``.-:+osso/.                                   \n                                       `-:+osyhhhysosoo+/-`                                        \n\f                                        .-/+oososyyyso+/:.                                         \n                                  `:oyhNN@hs+:/+:.-h@Ny/:+ssoo:`                                   \n                               :sd@@NNN@@+` :N@ho:`````   ```.:yhs:                                \n                            -syd@@@@@@@yd@dN@@@@o+oN.       ```.+/hNy:                             \n                          /y+/d@@@@@@@@N@N@@@y+ o:           ``````:yNd+`                          \n                        /h/.h@@@@@@@@@@@@@@+:                 ``````-dd/h+                         \n                      .h+  yN@@@@@@@@N@@h-                     ``````.s@h@d-                       \n                     /h.  `-s@@@@sss++oo:                       ``````s@@@@@o                      \n                    oy`   :yyN@@-      :.                        `````/@@@@@@s                     \n                   +h     `-:@@y  `d+      `dy                  ``````+@@@@@@@s                    \n                  -@`       ```+h@+```                          ` ```./@@@@@@@@:                   \n                  h/                hh ``.........               ``````dN@@@@@@@                   \n                 .N                   `:oh@@@@@@@d----           ```.```:@@@@@@@:                  \n                 /h                    .:s@@@@@@@@@@@N::         `````````yhh.s@o                  \n                 oy                    /@@@@@@@@@@@@@@@N+///     `````````````.@y                  \n                 +h                    /@@@@@@@@@@@@@@@@@@@N+++: `````````````.@s                  \n                 .N                    :@@@@@@@@@@@@@@@@@@@@@@@o `````````````-@:                  \n                  d/                   `/o@@@@@@@@@@@@@@@@@@@h/. `````````````+@                   \n                  -@`                    `:/@@@@@@@@@@@@@@@@@:  `````````````/@/                   \n                   oy                       .:@@@@@@@@@@@@@@N`  ```.`````````hy                    \n                    sy                      dN@@@@@@@@@@@+: ` ``````````````yy                     \n                     +h`                    y@@@@@@@@@@hs      ```````````.hs                      \n                      -h/                   +@@@@@@@@o/      ````````````/d:                       \n                        +h:                 .@@@N@@/.       ```````````:yo`                        \n                         `+y/              `+N@@`          ``````````/yo`                          \n                            :ss:            yNN.         `````````:sy/                             \n                              `/ss+-        `.-        ```````-+ss/`                               \n                                  ./ooo+:-````.:+-:```.-:/osso/.                                   \n                                       `-:+osyhhhysosoo+/-`                                        \n"
+ },
+ {
+  "title": "Earth",
+  "language": "batch",
+  "args": "",
+  "status": "stopped",
+  "exit_code": null,
+  "elapsed": 3.25,
+  "timestamp": "2026-10-23 04:25:11",
+  "output": "                 -@/    :`                                    ` ````````````y@/                   \n                   o@y`                                        ```.`````````-@y                    \n                    s@N/                                      `````````````/Ny                     \n                     +@@h`                                    ````````````+Ns                      \n                      -@@o                                   ```````````.y@:                       \n                        +@+`    -+                         ```````````.o@o`                        \n                         `+h/  ./.                         `````````-y@o`                          \n                            :ss:                         `````````/hh/                             \n                              `/ss+-                   ```````-+ss/`                               \n                                  ./ooo+/-`        `...-:/osso/.                                   \n                                       `-:+oooosyyyyyso+/-`                                        \n\f                                        .-/+oooooooooo+/:.                                         \n                                  `:oy@N@s+::oh@@hss@hyNN@N@yo:`                                   \n                               :osds/--.`   yo:```.+oN@@@NN@@hydys:                                \n                            -sy/-.`                   -ohN@@@@@@N@dNy:                             \n                          /hs.                           `h@@@@@@@NN@@@+`                          \n                        /h/                               `@@@@@@@@@@@@Nh+                         \n                      .h+                                   `yddN@@@@@@@d+h-                       \n                     /h.                                       .sh@@@@dhh/:ho                      \n                    oy`                                        `/+dNN@d.``/.ss                     \n                   +h                                           ``:::N@s`-o``ds                    \n                  -@`                                            ````---y@o-.-d:                   \n                  h/                                             ```.```...:s./@                   \n                 .N                                              ```````````.sN@:                  \n                 /h                                              ````````````.h@o                  \n                 oh                                              ````````````.@@y                  \n                 +ds.                                            ````````````-@@s                  \n                 .No.                                            ````````````+@@:                  \n                  ds-                                            ````````````/@@                   \n                  -No     :`                                    ``.``````````/@/                   \n                   o@N-                                         ```.````````.yy                    \n                    s@@y-                                     `````````````.dy                     \n                     +@@@/                                     ```````````-@s                      \n                      -dN@`                                  ```````````.o@:                       \n                        +ds.     -+                         ```````````/do`                        \n                         `+h/   :/`                        `````````.odo`                          \n                            :ss:                         `````````:yy/                             \n                              `/ss+-                   ```````-+ss/`                               \n                                  ./ooo+/-`        `...-:/osso/.                                   \n                                       `-:+oooooyyyyyso+/-`                                        \n"
+ },
+ {
+  "title": "example",
+  "language": "batch",
+  "args": "",
+  "status": "stopped",
+  "exit_code": null,
+  "elapsed": 1.77,
+  "timestamp": "2026-10-23 04:24:46",
+  "output": "Rozpoczynam skrypt BATCH...\nDane przetworzone pomyślnie.\n"
+ },
+ {
+  "title": "example",
+  "language": "batch",
+  "args": "",
+  "status": "stopped",
+  "exit_code": null,
+  "elapsed": 1.63,
+  "timestamp": "2026-10-23 04:16:56",
+  "output": "Rozpoczynam skrypt BATCH...\nDane przetworzone pomyślnie.\n"
+ }
+]

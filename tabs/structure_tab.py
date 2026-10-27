@@ -39,8 +39,6 @@ Wiring it into the main window::
 
 import os
 
-import app_paths
-
 from PyQt5 import QtCore, QtWidgets
 
 from . import structure_core as core
@@ -83,10 +81,9 @@ class StructureTab(QtWidgets.QWidget):
             return fallback or key
 
     def _default_dir(self):
-        # Generated project trees are program state, so they live in db\structure.
-        base = (getattr(self.window, "db_dir", None)
-                or getattr(self.window, "DB_DIR", None)
-                or app_paths.ensure_db_dir())
+        base = (getattr(self.window, "base_dir", None)
+                or getattr(self.window, "BASE_DIR", None)
+                or os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
         return os.path.join(base, core.STRUCTURE_DIR)
 
     def target_dir(self):

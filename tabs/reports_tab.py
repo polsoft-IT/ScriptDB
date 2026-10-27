@@ -38,8 +38,6 @@ import json
 import os
 import re
 
-import app_paths
-
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtGui import QFont
 
@@ -939,8 +937,8 @@ class ReportsTab(QtWidgets.QWidget):
 
     def _base_dir(self):
         return (getattr(self.window, "base_dir", None)
-                or getattr(self.window, "DATA_DIR", None)
-                or app_paths.ensure_data_dir())
+                or getattr(self.window, "BASE_DIR", None)
+                or os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
     def _default_dirs(self):
         base = self._base_dir()

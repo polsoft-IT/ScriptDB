@@ -1,0 +1,38 @@
+{
+  "columns": {
+    "name": true,
+    "category": true,
+    "tags": true,
+    "date": false,
+    "favorite": true
+  },
+  "group_by_category": false,
+  "separators_enabled": true,
+  "show_separators": true,
+  "zebra_stripes": true,
+  "show_row_numbers": true,
+  "bold_separators": true,
+  "empty_separator_label": "",
+  "interpreters": {
+    "python": "",
+    "bash": "",
+    "powershell": "",
+    "node": "",
+    "batch": "",
+    "vbscript": ""
+  },
+  "todo_window_geometry": [
+    440,
+    190,
+    1042,
+    692
+  ],
+  "theme": "light",
+  "window_geometry": [
+    203,
+    60,
+    1397,
+    920
+  ],
+  "search_history": []
+}

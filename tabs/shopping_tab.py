@@ -17,8 +17,6 @@ import json
 import os
 import tempfile
 
-import app_paths
-
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 #: The units offered by the dialog; the field stays editable, so a unit that is
@@ -126,9 +124,8 @@ class ShoppingTab(QtWidgets.QWidget):
     def __init__(self, window):
         super().__init__(window)
         self.window = window
-        base = (getattr(window, "db_dir", None)
-                or getattr(window, "DB_DIR", None)
-                or app_paths.ensure_db_dir())
+        base = (getattr(window, "base_dir", None)
+                or os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
         self.base_dir = base
         self.store = ShoppingStore(os.path.join(base,
                                                 ShoppingStore.DATA_FILE))

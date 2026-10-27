@@ -599,10 +599,9 @@ def safe_join(root, relative, allow_absolute=False):
     text = str(relative).replace("\\", "/").strip()
     if not text:
         return "", "empty path"
-    if os.path.isabs(text) or text.startswith("/") or re.match(r"^[A-Za-z]:", text):
+    if os.path.isabs(text) or re.match(r"^[A-Za-z]:", text):
         if not allow_absolute:
             return "", "absolute paths are not allowed: %s" % text
-        return os.path.abspath(text.replace("/", os.sep)), ""
     parts = []
     for part in text.split("/"):
         if part in ("", "."):

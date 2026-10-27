@@ -47,7 +47,6 @@ import subprocess
 import sys
 import tempfile
 import threading
-import app_paths
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtGui import QFont
 from . import (sandbox_audit, sandbox_fs, sandbox_integration,
@@ -321,7 +320,7 @@ _ALWAYS_BLOCKED = ("mount", "kill")
 # The terminal's own modules: importing any of them would hand this run the
 # host's live objects instead of an isolated copy, so they are refused.
 _TERMINAL_MODULES = {
-    "sdb_scripts", "tabs", "PyQt5",
+    "sdb", "sdb_scripts", "tabs", "PyQt5",
 }
 # Modules that reach across the process boundary (memory, the process
 # table, the terminal itself). A run may never use them.
@@ -2935,8 +2934,8 @@ class SandboxTab(QtWidgets.QWidget):
 
     def _base_dir(self):
         return (getattr(self.window, "base_dir", None)
-                or getattr(self.window, "DATA_DIR", None)
-                or app_paths.ensure_data_dir())
+                or getattr(self.window, "BASE_DIR", None)
+                or os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
     def _scripts(self):
         """All real script entries from the main window (never None)."""

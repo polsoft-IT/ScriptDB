@@ -179,7 +179,7 @@ def test_tab():
 def test_window():
     print("\n== window ==")
     try:
-        import sdb_scripts as sdb
+        import sdb as sdb
     except Exception as exc:                   # a missing dependency is not a bug
         print("skip the window check:", exc)
         return

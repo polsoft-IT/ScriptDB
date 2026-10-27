@@ -26,7 +26,6 @@ import datetime as dt
 import ast
 import os
 import uuid
-import app_paths
 from PyQt5 import QtCore, QtGui, QtWidgets
 from . import todo_core as core
 from . import todo_notify
@@ -1230,10 +1229,9 @@ class TodoTab(QtWidgets.QWidget):
     def __init__(self, window):
         super().__init__(window)
         self.window = window
-        # The task list and the shopping list are databases (db\).
-        base = (getattr(window, "db_dir", None)
-                or getattr(window, "DB_DIR", None)
-                or app_paths.ensure_db_dir())
+        base = (getattr(window, "base_dir", None)
+                or getattr(window, "BASE_DIR", None)
+                or os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
         self.base_dir = base
         self.store = core.TodoStore(os.path.join(base, core.TodoStore.DATA_FILE))
         self.calendar = core.HolidayCalendar(self.store.settings.get(
@@ -1985,6 +1983,8 @@ class TodoTab(QtWidgets.QWidget):
         menu.addSeparator()
         menu.addAction(self.t("todo_clear_done", "Clear completed tasks"),
                        self.clear_completed)
+        menu.addAction(self.t("todo_clear_all", "Remove all tasks"),
+                       self.clear_all_tasks)
 
         notifications = menu.addMenu(self.t("todo_notifications",
                                             "Reminders and notifications"))
@@ -2578,6 +2578,28 @@ class TodoTab(QtWidgets.QWidget):
                 != QtWidgets.QMessageBox.Yes:
             return 0
         removed = self.store.clear_completed()
+        self.save()
+        self.refresh()
+        self.status.setText(self.t("todo_cleared", "removed {count} task(s)",
+                                   count=removed))
+        return removed
+
+    def clear_all_tasks(self):
+        """Delete every task at once (with a confirmation prompt)."""
+        count = len(self.store.tasks)
+        if not count:
+            self.status.setText(self.t("todo_nothing_to_clear",
+                                       "no tasks to remove"))
+            return 0
+        if QtWidgets.QMessageBox.question(
+                self, self.t("todo_clear_all", "Remove all tasks"),
+                self.t("todo_clear_all_ask",
+                       "Remove all {count} task(s)? This cannot be undone.",
+                       count=count)) != QtWidgets.QMessageBox.Yes:
+            return 0
+        removed = self.store.clear_all()
+        self.selection = None
+        self.editor.new_task()
         self.save()
         self.refresh()
         self.status.setText(self.t("todo_cleared", "removed {count} task(s)",

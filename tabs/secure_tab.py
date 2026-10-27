@@ -46,8 +46,6 @@ The main window only needs a few lines to wire the tab in::
 
 import os
 
-import app_paths
-
 from PyQt5 import QtCore, QtWidgets
 
 from . import secure_core as core
@@ -83,10 +81,9 @@ class SecurityTab(QtWidgets.QWidget):
             return fallback or key
 
     def _default_dir(self):
-        # The integrity registry and the backups are program state (db\security).
-        base = (getattr(self.window, "db_dir", None)
-                or getattr(self.window, "DB_DIR", None)
-                or app_paths.ensure_db_dir())
+        base = (getattr(self.window, "base_dir", None)
+                or getattr(self.window, "BASE_DIR", None)
+                or os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
         return os.path.join(base, core.SECURITY_DIR)
 
     def backup_dir(self):

@@ -53,7 +53,6 @@ import datetime as dt
 import json
 import os
 import re
-import app_paths
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtGui import QFont
 from . import (breakpoints, code_flow, debug_langs, debug_steps,
@@ -1044,10 +1043,9 @@ class DebuggerTab(QtWidgets.QWidget):
             return fallback or key
 
     def _base_dir(self):
-        # The debugger session store is a database, so it lives in db\.
-        return (getattr(self.window, "db_dir", None)
-                or getattr(self.window, "DB_DIR", None)
-                or app_paths.ensure_db_dir())
+        return (getattr(self.window, "base_dir", None)
+                or getattr(self.window, "BASE_DIR", None)
+                or os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
     def _session_path(self):
         return os.path.join(self._base_dir(), DEBUGGER_FILE)

@@ -1,0 +1,72 @@
+Lista rozszerzeń plików obsługiwanych przez ScriptDB
+=====================================================
+
+PODSUMOWANIE ROZSZERZEŃ
+-----------------------
+.py      - Python
+.pyw     - Python (GUI bez konsoli)
+.pyi     - Python (stub typów)
+.pyx     - Python (Cython)
+.sh      - Bash
+.bash    - Bash
+.zsh     - Bash
+.ksh     - Bash
+.shell   - Bash
+.ps1     - PowerShell
+.psm1    - PowerShell (moduł)
+.psd1    - PowerShell (manifest modułu)
+.vbs     - VBScript
+.vbe     - VBScript (zaszyfrowany)
+.wsf     - Windows Script Host
+.js      - JavaScript
+.jsx     - JavaScript (React)
+.mjs     - JavaScript (ES Module)
+.cjs     - JavaScript (CommonJS)
+.ts      - TypeScript
+.tsx     - TypeScript (React)
+.java    - Java
+.kt      - Kotlin (alias składni -> Java)
+.cpp     - C++
+.c       - C
+.cc      - C++
+.cxx     - C++
+.h       - C++ (nagłówek)
+.hpp     - C++ (nagłówek)
+.hxx     - C++ (nagłówek)
+.bat     - Batch / CMD
+.cmd     - Batch / CMD
+.nt      - Batch
+.html    - HTML
+.htm     - HTML
+.xhtml   - HTML
+.hta     - HTA (aplikacja HTML)
+.reg     - Rejestr Windows
+.json    - JSON
+.jsonc   - JSON (z komentarzami)
+.json5   - JSON5
+.yaml    - YAML
+.yml     - YAML
+.ini     - INI
+.toml    - TOML (obsługiwany jako INI)
+.cfg     - Konfiguracja systemowa
+.conf    - Konfiguracja systemowa
+.inf     - INF (informacje instalacyjne)
+.env     - Plik zmiennych środowiskowych
+.sql     - SQL
+.sqlite  - SQLite
+.sqlite3 - SQLite
+.rb      - Ruby
+.rake    - Ruby (Rake)
+.r       - R (przez rozszerzenie dodatkowe)
+.php     - PHP (przez skaner metadanych)
+.pl      - Perl (przez skaner metadanych)
+.lua     - Lua (przez DOCs)
+.go      - Go (przez DOCs)
+.rs      - Rust (przez DOCs)
+.cs      - C# (przez DOCs)
+.ipynb   - Jupyter Notebook
+.txt     - Inne / nieznane (Other)
+
+ROZSZERZENIA NIEOBSŁUGIWANE (binaria)
+-------------------------------------
+.exe, .pyd, .dll, .lnk, .com, .scr - celowo nieobsługiwane (kod maszynowy/binaria)

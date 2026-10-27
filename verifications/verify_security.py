@@ -34,9 +34,6 @@ def check(label, ok, detail=""):
 class FakeWindow(QtWidgets.QWidget):
     def __init__(self, base):
         super().__init__()
-        # The real window publishes both folders: db_dir for the program state
-        # (databases), base_dir for the files it produces. The tab reads db_dir.
-        self.db_dir = base
         self.base_dir = base
         self.lang = "en"
         self.scripts = [

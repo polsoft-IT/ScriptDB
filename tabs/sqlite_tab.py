@@ -30,8 +30,6 @@ import json
 import os
 import re
 
-import app_paths
-
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtGui import QFont
 
@@ -274,9 +272,9 @@ class SqliteTab(QtWidgets.QWidget):
                 pass
 
     def _data_dir(self):
-        base = (getattr(self.window, "db_dir", None)
-                or getattr(self.window, "DB_DIR", None)
-                or app_paths.ensure_db_dir())
+        base = (getattr(self.window, "base_dir", None)
+                or getattr(self.window, "BASE_DIR", None)
+                or os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
         return base
 
     # ------------------------------------------------------------------- UI

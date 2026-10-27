@@ -69,8 +69,8 @@ _DARK = {
     "input": "#1b1b1c",           # an editable field
     "border": "#3c3c3c",          # the ordinary dividing line
     "border_strong": "#4a4a4a",   # a line that must read as a wall
-    "text": "#dfe7f5",            # the body text
-    "text_dim": "#9aa0a6",        # a label that is secondary
+    "text": "#c8cfda",            # the body text (darker, less glare)
+    "text_dim": "#8a9096",        # a label that is secondary
     "text_faint": "#6e7681",      # a hint, a placeholder
     "accent": "#8ab4f8",          # the one colour that means "this app"
     "accent_text": "#0b1220",     # text on top of the accent
@@ -114,8 +114,8 @@ _MONO = {
     "input": "#0d0d0d",
     "border": "#3a3a3a",
     "border_strong": "#5a5a5a",
-    "text": "#e6e6e6",
-    "text_dim": "#a0a0a0",
+    "text": "#cfcfcf",
+    "text_dim": "#949494",
     "text_faint": "#707070",
     "accent": "#e6e6e6",
     "accent_text": "#0d0d0d",

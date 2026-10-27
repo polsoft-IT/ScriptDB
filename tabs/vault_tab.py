@@ -24,7 +24,6 @@ import json
 import os
 import re
 import shutil
-import app_paths
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtGui import QFont
 
@@ -465,10 +464,9 @@ class VaultTab(QtWidgets.QWidget):
             return fallback or key
 
     def _default_dir(self):
-        # The vault store is an encrypted database, so it lives in db\vault.
-        base = (getattr(self.window, "db_dir", None)
-                or getattr(self.window, "DB_DIR", None)
-                or app_paths.ensure_db_dir())
+        base = (getattr(self.window, "base_dir", None)
+                or getattr(self.window, "BASE_DIR", None)
+                or os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
         return os.path.join(base, VAULT_DIR)
 
     def _announce(self, detail):

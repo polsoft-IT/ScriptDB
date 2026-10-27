@@ -420,7 +420,7 @@ def _detect_bypass(run):
     evidence = []
     # The imports that are refused precisely because they are escape routes.
     guard_imports = ("ctypes", "cffi", "mmap", "fcntl", "resource", "signal",
-                     "sdb_scripts", "tabs", "pyqt5", "builtins")
+                     "sdb", "sdb_scripts", "tabs", "pyqt5", "builtins")
     for entry in _violations(run):
         kind = str(entry.get("kind", ""))
         detail = str(entry.get("detail", ""))

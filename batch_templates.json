@@ -1,0 +1,23 @@
+[
+  {
+    "category": "starter",
+    "key": "batch_simple",
+    "label": "Simple Batch Script",
+    "languages": ["batch"],
+    "body": "@echo off\nsetlocal\nrem --- Your code goes here ---\necho ${message}\nendlocal\n"
+  },
+  {
+    "category": "block",
+    "key": "batch_for_loop",
+    "label": "Batch For Loop",
+    "languages": ["batch"],
+    "body": "@echo off\nsetlocal\nfor %%i in (${item1} ${item2} ${item3}) do (\n    echo %%i\n)\nendlocal\n"
+  },
+  {
+    "category": "block",
+    "key": "batch_if_condition",
+    "label": "Batch If/Else Condition",
+    "languages": ["batch"],
+    "body": "@echo off\nsetlocal\nif \"${variable}\" == \"${value}\" (\n    echo Variable matches value.\n) else (\n    echo Variable does not match.\n)\nendlocal\n"
+  }
+]

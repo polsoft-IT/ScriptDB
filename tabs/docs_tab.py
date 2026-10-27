@@ -49,7 +49,6 @@ import hmac
 import json
 import os
 import sqlite3
-import app_paths
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtGui import QFont
 from .docs_engine import DocsIndex
@@ -593,8 +592,9 @@ class DocsTab(QtWidgets.QWidget):
             return fallback or key
 
     def _default_db_path(self):
-        base = getattr(self.window, "db_dir", None) or getattr(
-            self.window, "DB_DIR", None) or app_paths.ensure_db_dir()
+        base = getattr(self.window, "base_dir", None) or getattr(
+            self.window, "BASE_DIR", None) or os.path.dirname(
+                os.path.dirname(os.path.abspath(__file__)))
         return os.path.join(base, DOCS_DB_FILE)
 
     # ------------------------------------------------------------------- UI

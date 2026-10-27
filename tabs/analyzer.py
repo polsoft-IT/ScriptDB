@@ -29,8 +29,6 @@ import datetime as dt
 import os
 import re
 
-import app_paths
-
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtGui import QFont
 
@@ -474,7 +472,7 @@ class ScriptAnalyzerTab(QtWidgets.QWidget):
     def _diff_rows(self, old_code, new_code):
         """Aligned diff rows for two code bodies (reuses the Diff tab engine)."""
         try:
-            from sdb_scripts import align_lines
+            from sdb import align_lines
         except Exception:
             align_lines = None
         if align_lines is not None:
@@ -972,11 +970,11 @@ class ScriptAnalyzerTab(QtWidgets.QWidget):
         return path
 
     def _data_dir(self):
-        base = getattr(self.window, "db_dir", None) or getattr(
-            self.window, "DB_DIR", None)
+        base = getattr(self.window, "base_dir", None) or getattr(
+            self.window, "BASE_DIR", None)
         if base:
             return base
-        return app_paths.ensure_db_dir()
+        return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
     # ---------------------------------------------------- audit integration
     def _announce(self, detail):
@@ -4673,7 +4671,8 @@ def analyzer_cli(argv=None):
     if command == "report":
         fmt = argv[1] if len(argv) > 1 else "txt"
         # Analyse the databases on disk without building any window.
-        data_path = app_paths.db_file("scripts_db.json")
+        data_path = os.path.join(os.path.dirname(os.path.dirname(
+            os.path.abspath(__file__))), "scripts_db.json")
         try:
             import json as _json
             with open(data_path, "r", encoding="utf-8") as handle:

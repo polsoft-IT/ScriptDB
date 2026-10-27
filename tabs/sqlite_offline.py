@@ -1403,7 +1403,7 @@ def _split_sql(sql):
     fallback so this module never depends on the import succeeding.
     """
     try:
-        from sdb_scripts import _split_sql_statements
+        from sdb import _split_sql_statements
         return list(_split_sql_statements(sql))
     except Exception:
         pass

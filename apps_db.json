@@ -1,0 +1,18 @@
+{
+  "schema": 2,
+  "apps": [],
+  "groups": [
+    {
+      "id": "c8f22e0d8fc64a28b1e32a6a2efb393e",
+      "name": "Compiler",
+      "folder": true
+    }
+  ],
+  "view": "list",
+  "sort": "name",
+  "sort_desc": false,
+  "icon_size": 64,
+  "recent": [
+    "8ba1a717d35d4b1887eefa3ddeae4b86"
+  ]
+}

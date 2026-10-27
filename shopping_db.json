@@ -1,0 +1,21 @@
+{
+  "schema": 1,
+  "saved": "2026-09-17 12:48:59",
+  "settings": {
+    "currency": "PLN",
+    "default_category": "General"
+  },
+  "items": [
+    {
+      "id": "item-1789645739.057946",
+      "name": "Coffee",
+      "quantity": 1.0,
+      "unit": "",
+      "price": 19.99,
+      "category": "General",
+      "note": "",
+      "done": false,
+      "added": "2026-09-17 12:48:59"
+    }
+  ]
+}

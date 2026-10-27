@@ -970,6 +970,12 @@ class TodoStore:
         return task
 
     # -- bulk operations ---------------------------------------------------
+    def clear_all(self):
+        """Remove every task (completed or not); returns how many went."""
+        count = len(self.tasks)
+        self.tasks = []
+        return count
+
     def clear_completed(self):
         """Remove every completed task; returns how many went."""
         before = len(self.tasks)

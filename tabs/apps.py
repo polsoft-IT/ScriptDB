@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """Personal application launcher tab for ScriptDB."""
 
+import sys
+import shutil
 import json
 import os
 import shlex
@@ -9,8 +11,6 @@ import subprocess
 import time
 import urllib.parse
 import uuid
-
-import app_paths
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
@@ -18,6 +18,14 @@ class AppsTab(QtWidgets.QWidget):
     """A local, personalizable launcher with groups and popup folders."""
 
     DATA_FILE = "apps_db.json"
+    
+    def __init__(self, db, settings, parent=None):
+        super().__init__(parent)
+        self.db = db
+        self.settings = settings
+        self.running_processes = {}  # Słownik do przechowywania uruchomionych procesów: {app_id: subprocess.Popen}
+        self.load_apps()
+        self.setup_ui()
     SCHEMA_VERSION = 2
     RECENT_LIMIT = 10
     # Launch kinds the launcher knows about. "auto" is resolved from the path
@@ -30,10 +38,8 @@ class AppsTab(QtWidgets.QWidget):
     def __init__(self, window):
         super().__init__(window)
         self.window = window
-        # The launcher keeps its entries in the databases folder (db\).
-        base = (getattr(window, "db_dir", None)
-                or getattr(window, "DB_DIR", None)
-                or app_paths.ensure_db_dir())
+        base = (getattr(window, "base_dir", None)
+                or os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
         self.data_path = os.path.join(base, self.DATA_FILE)
         self.apps = []
         self.groups = []
@@ -308,10 +314,14 @@ class AppsTab(QtWidgets.QWidget):
                 for group in self.groups}
 
     def _app_badges(self, app):
-        """Badges shown on a card: missing path, folder group, tags."""
+        """Badges shown on a card: missing path, folder group, tags, running status."""
         badges = []
         if self._app_missing(app):
             badges.append("\u26a0 missing")
+        # Dodaj odznakę że skrypt jest uruchomiony
+        app_id = app.get("id", None)
+        if app_id in self.running_processes:
+            badges.append("● running")
         group = next((item for item in self.groups
                       if item.get("id") == app.get("group")), None)
         if group and group.get("folder"):
@@ -413,8 +423,15 @@ class AppsTab(QtWidgets.QWidget):
         # Menu for one application: launch, edit, remove, folder, view, sort.
         menu = QtWidgets.QMenu(self)
         if app is not None:
+            app_id = app.get("id", None)
+            is_running = app_id in self.running_processes if app_id else False
+            
             menu.addAction(self.t("apps_launch", "Launch"),
                            lambda: self.launch(app))
+            # Dodaj opcję zatrzymania tylko jeśli skrypt jest uruchomiony
+            if is_running:
+                menu.addAction(self.t("apps_stop", "Stop"),
+                               lambda: self.stop_process(app_id))
             menu.addAction(self.t("apps_edit", "Edit"),
                            lambda: self.edit_app(app))
             pin = menu.addAction(
@@ -568,13 +585,21 @@ class AppsTab(QtWidgets.QWidget):
         # A short badge line (missing path, folder group, tags) turns the tile
         # into something readable when the icons are small.
         badge_text = self._app_badges(app)
-        if badge_text and self.view_mode == "grid":
+        if badge_text:
             badge = QtWidgets.QLabel(badge_text)
             badge.setProperty("role", "hint")
             badge.setWordWrap(True)
-            badge.setAlignment(QtCore.Qt.AlignCenter)
-            if self._app_missing(app):
-                badge.setStyleSheet("color: #f7c66d;")
+            # Ustaw wyrównanie w zależności od trybu widoku
+            if self.view_mode == "list":
+                badge.setAlignment(QtCore.Qt.AlignVCenter)
+            else:
+                badge.setAlignment(QtCore.Qt.AlignCenter)
+            # Ustaw odpowiedni kolor w zależności od typu odznaki
+            app_id = app.get("id", None)
+            if app_id in self.running_processes:
+                badge.setStyleSheet("color: #4CAF50;")  # Zielony dla uruchomionych
+            elif self._app_missing(app):
+                badge.setStyleSheet("color: #f7c66d;")  # Żółty dla brakujących
             layout.addWidget(badge, 0)
         menu = QtWidgets.QToolButton()
         menu.setText("...")
@@ -952,17 +977,171 @@ class AppsTab(QtWidgets.QWidget):
             elif path.startswith(("http://", "https://")):
                 QtGui.QDesktopServices.openUrl(QtCore.QUrl(path))
             else:
-                subprocess.Popen([path] + shlex.split(app.get("args", ""), posix=False), cwd=os.path.dirname(path) or None)
-        except (OSError, ValueError) as exc:
-            QtWidgets.QMessageBox.warning(self, self.t("apps_error", "Launcher error"), str(exc))
-            return
-        # Record the launch time and count so the "Recently used" and "Most
-        # used" orders stay current.
-        app["last_used"] = int(time.time())
-        app["launch_count"] = int(app.get("launch_count") or 0) + 1
-        self._remember_recent(app)
-        self._save()
-        self.refresh()
+                # W systemie Windows pliki .py wymagają uruchomienia przez launcher Pythona py.exe
+                if sys.platform.startswith('win') and (path.lower().endswith('.py') or path.lower().endswith('.pyw')):
+                    # Najpierw szukamy środowiska wirtualnego w folderze skryptu lub nadrzędnym
+                    script_dir = os.path.dirname(os.path.abspath(path))
+                    venv_python = None
+                    
+                    # Potencjalne ścieżki do interpreterów w środowiskach wirtualnych (Windows)
+                    venv_candidates = [
+                        # Standardowe venv/virtualenv
+                        os.path.join(script_dir, "venv", "Scripts", "python.exe"),
+                        os.path.join(script_dir, "venv", "Scripts", "pythonw.exe"),
+                        os.path.join(script_dir, ".venv", "Scripts", "python.exe"),
+                        os.path.join(script_dir, ".venv", "Scripts", "pythonw.exe"),
+                        os.path.join(script_dir, "env", "Scripts", "python.exe"),
+                        os.path.join(script_dir, "env", "Scripts", "pythonw.exe"),
+                        os.path.join(script_dir, "virtualenv", "Scripts", "python.exe"),
+                        # Conda environments
+                        os.path.join(script_dir, "conda", "python.exe"),
+                        os.path.join(script_dir, "conda", "Scripts", "python.exe"),
+                        os.path.join(script_dir, ".conda", "python.exe"),
+                        # Sprawdź też folder nadrzędny
+                        os.path.join(os.path.dirname(script_dir), "venv", "Scripts", "python.exe"),
+                        os.path.join(os.path.dirname(script_dir), ".venv", "Scripts", "python.exe"),
+                        os.path.join(os.path.dirname(script_dir), "conda", "python.exe"),
+                    ]
+                    
+                    # Sprawdź czy któryś z kandydatów istnieje
+                    for candidate in venv_candidates:
+                        if os.path.exists(candidate):
+                            # Dla plików .pyw preferujemy pythonw.exe z venv
+                            if path.lower().endswith('.pyw') and candidate.endswith("pythonw.exe"):
+                                venv_python = candidate
+                                break
+                            elif not path.lower().endswith('.pyw') and candidate.endswith("python.exe"):
+                                venv_python = candidate
+                                break
+                    
+                    # Jeśli nie znaleźliśmy python.exe dla .pyw, użyj pierwszego znalezionego
+                    if not venv_python:
+                        for candidate in venv_candidates:
+                            if os.path.exists(candidate):
+                                venv_python = candidate
+                                break
+                 
+                    # Jeśli nie ma środowiska wirtualnego, szukamy systemowych interpreterów
+                    python_interpreter = None
+                    # Najpierw sprawdź czy użytkownik ręcznie ustawił interpreter w bazie danych
+                    custom_interpreter = app.get("python_interpreter", None)
+                    if custom_interpreter and os.path.exists(custom_interpreter):
+                        python_interpreter = custom_interpreter
+                    elif venv_python:
+                        python_interpreter = venv_python
+                    else:
+                        if shutil.which("py"):
+                            python_interpreter = "py"
+                        elif shutil.which("pythonw") and path.lower().endswith('.pyw'):
+                            python_interpreter = "pythonw"
+                        elif shutil.which("python"):
+                            python_interpreter = "python"
+                        elif shutil.which("python3"):
+                            python_interpreter = "python3"
+                        elif shutil.which("pythonw"):
+                            python_interpreter = "pythonw"
+                    
+                    if python_interpreter:
+                        # Wyświetl informację o użytym środowisku (tylko jeśli to venv lub custom)
+                        if venv_python or custom_interpreter:
+                            # Krótki komunikat w konsoli programu (opcjonalny)
+                            print(f"[AppsTab] Uruchamianie skryptu {os.path.basename(path)} z interpreterem: {python_interpreter}")
+                        
+                        # Pokaż okno dialogowe do wprowadzenia argumentów przez użytkownika
+                        saved_args = app.get("args", "")
+                        args_input, ok = QtWidgets.QInputDialog.getText(
+                            self,
+                            "Argumenty skryptu",
+                            f"Wprowadź argumenty dla skryptu {app.get('name', os.path.basename(path))}:",
+                            text=saved_args
+                        )
+                        
+                        # Jeśli użytkownik potwierdził, użyj wprowadzonych argumentów
+                        if ok:
+                            user_args = args_input.strip()
+                            # Jeśli argumenty się zmieniły, zapisz je na stałe
+                            if user_args != saved_args:
+                                app["args"] = user_args
+                                # Zapisz zmiany w bazie danych
+                                self.save()
+                                print(f"[AppsTab] Zapisano nowe argumenty dla skryptu {app.get('name')}: {user_args}")
+                        else:
+                            user_args = saved_args
+                        
+                        # Użyj znalezionego interpretera do uruchomienia skryptu
+                        cmd = [python_interpreter, path] + shlex.split(user_args, posix=False)
+                        # Dla plików .pyw użyj flagi CREATE_NO_WINDOW aby ukryć konsolę
+                        creationflags = 0
+                        if path.lower().endswith('.pyw'):
+                            creationflags = subprocess.CREATE_NO_WINDOW
+                        # Uruchom proces i zapisz go w liście aktywnych procesów
+                        process = subprocess.Popen(cmd, cwd=script_dir, creationflags=creationflags)
+                        # Zapisz proces w słowniku, używając id aplikacji jako klucza
+                        app_id = app.get("id", str(uuid.uuid4()))
+                        self.running_processes[app_id] = process
+                        print(f"[AppsTab] Uruchomiono skrypt {app.get('name', os.path.basename(path))} (PID: {process.pid})")
+                        # Usuń proces z listy po zakończeniu (asynchronicznie)
+                        self.check_process_finished(app_id)
+                    else:
+                        # Pokaż komunikat błędu jeśli nie znaleziono żadnego interpretera
+                        QtWidgets.QMessageBox.warning(
+                            self,
+                            "Błąd uruchamiania skryptu",
+                            "Nie znaleziono interpretera Pythona w systemie ani środowiska wirtualnego. "
+                            "Zainstaluj Pythona i dodaj go do ścieżki PATH, aby móc uruchamiać skrypty .py/.pyw."
+                        )
+                else:
+                    # Dla innych systemów lub plików nie-Python, użyj domyślnego zachowania
+                    QtGui.QDesktopServices.openUrl(QtCore.QUrl.fromLocalFile(path))
+        except Exception as e:
+            QtWidgets.QMessageBox.warning(
+                self,
+                "Błąd uruchamiania",
+                f"Nie udało się uruchomić aplikacji: {str(e)}"
+            )
+    
+    def check_process_finished(self, app_id):
+        """Asynchronicznie sprawdza czy proces się zakończył i usuwa go z listy aktywnych."""
+        if app_id in self.running_processes:
+            process = self.running_processes[app_id]
+            # Sprawdź czy proces jest nadal uruchomiony
+            if process.poll() is None:
+                # Proces nadal działa, sprawdź ponownie za 1 sekundę
+                QtCore.QTimer.singleShot(1000, lambda: self.check_process_finished(app_id))
+            else:
+                # Proces się zakończył, usuń z listy
+                del self.running_processes[app_id]
+                print(f"[AppsTab] Proces z ID {app_id} zakończył działanie (kod wyjścia: {process.returncode})")
+    
+    def stop_process(self, app_id):
+        """Zatrzymuje uruchomiony proces o podanym ID."""
+        if app_id in self.running_processes:
+            process = self.running_processes[app_id]
+            try:
+                # Na Windowsie używamy taskkill aby zakończyć cały drzewo procesów
+                if sys.platform.startswith('win'):
+                    subprocess.run(["taskkill", "/F", "/T", "/PID", str(process.pid)], check=True, capture_output=True)
+                else:
+                    process.terminate()
+                    process.wait(timeout=3)
+                # Usuń proces z listy
+                app_name = next((app["name"] for app in self.apps if app.get("id") == app_id), "Nieznany skrypt")
+                print(f"[AppsTab] Zatrzymano skrypt {app_name} (PID: {process.pid})")
+                del self.running_processes[app_id]
+                # Odśwież interfejs aby zaktualizować ikony statusu
+                self.refresh_ui()
+            except Exception as e:
+                QtWidgets.QMessageBox.warning(
+                    self,
+                    "Błąd zatrzymywania skryptu",
+                    f"Nie udało się zatrzymać skryptu: {str(e)}"
+                )
+        else:
+            QtWidgets.QMessageBox.information(
+                self,
+                "Informacja",
+                "Ten skrypt nie jest obecnie uruchomiony."
+            )
 
     def _remember_recent(self, app):
         """Move an app to the front of the persisted recent list."""

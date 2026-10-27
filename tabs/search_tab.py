@@ -25,8 +25,6 @@ kind registered with ``search_engine.register_kind`` shows up here after a
 import os
 import re
 
-import app_paths
-
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtGui import QFont
 
@@ -295,7 +293,7 @@ class SearchTab(QtWidgets.QWidget):
             if value:
                 return [str(root) for root in value if root]
         base = getattr(self.window, "base_dir", None) or getattr(
-            self.window, "DATA_DIR", None)
+            self.window, "BASE_DIR", None)
         return [base] if base else []
 
     # Default file extensions the filesystem searches read.
@@ -518,10 +516,10 @@ class SearchTab(QtWidgets.QWidget):
 
     def _data_dir(self):
         base = getattr(self.window, "base_dir", None) or getattr(
-            self.window, "DATA_DIR", None)
+            self.window, "BASE_DIR", None)
         if base:
             return base
-        return app_paths.ensure_data_dir()
+        return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
     # ------------------------------------------------------- translation
     def retranslate(self, table):

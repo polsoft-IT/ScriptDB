@@ -1,0 +1,4 @@
+# Data format: Key|Value
+user_id|1001
+username|testuser
+email|test@example.com

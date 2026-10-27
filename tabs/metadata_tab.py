@@ -27,8 +27,6 @@ ever run when the user asks for one, because a scan walks the disk.
 
 import os
 
-import app_paths
-
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 from . import metadata_core
@@ -83,13 +81,13 @@ class MetadataTab(QtWidgets.QWidget):
 
     def _default_root(self):
         """The folder to scan: wherever the scripts the app shows live."""
-        for name in ("base_dir", "db_dir", "DATA_DIR"):
+        for name in ("base_dir", "BASE_DIR"):
             base = getattr(self.window, name, None)
             if base and os.path.isdir(base):
                 return base
-        # The databases folder is where the scripts the app works with live once
-        # the program runs as a frozen executable.
-        return app_paths.ensure_db_dir()
+        # Fall back to the project folder this file sits in, which is where the
+        # application's own scripts are when it runs from source.
+        return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
     def _role_key(self):
         """The role the tab is acting as, from the window when it has one."""

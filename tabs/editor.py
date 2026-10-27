@@ -31,9 +31,127 @@ import keyword
 import os
 import re
 import shutil
-import app_paths
+import sys
+import tempfile
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtGui import QFont
+
+
+# Extension categories for file dialogs (mirrored from sdb.py to avoid circular import)
+CATEGORY_EXTENSIONS = {
+    "Python": ".py",
+    "Bash": ".sh",
+    "PowerShell": ".ps1",
+    "VBScript": ".vbs",
+    "JavaScript": ".js",
+    "Java": ".java",
+    "C++": ".cpp",
+    "Batch": ".bat",
+    "HTML": ".html",
+    "HTA": ".hta",
+    "Registry (REG)": ".reg",
+    "JSON": ".json",
+    "YAML": ".yaml",
+    "INI": ".ini",
+    "System config": ".cfg",
+    "SQL": ".sql",
+    "Ruby": ".rb",
+    "Other": ".txt",
+}
+
+EXTENSION_CATEGORIES = {ext: cat for cat, ext in CATEGORY_EXTENSIONS.items()}
+
+EXTENSION_ALIASES = {
+    ".pyw": "Python", ".pyi": "Python", ".pyx": "Python",
+    ".bash": "Bash", ".zsh": "Bash", ".ksh": "Bash", ".shell": "Bash",
+    ".psm1": "PowerShell", ".psd1": "PowerShell",
+    ".jsx": "JavaScript", ".mjs": "JavaScript", ".cjs": "JavaScript",
+    ".ts": "JavaScript", ".tsx": "JavaScript",
+    ".vbe": "VBScript", ".wsf": "VBScript",
+    ".cmd": "Batch", ".nt": "Batch",
+    ".htm": "HTML", ".xhtml": "HTML",
+    ".reg": "Registry (REG)",
+    ".c": "C++", ".cc": "C++", ".cxx": "C++", ".hpp": "C++", ".h": "C++",
+    ".sqlite": "SQL", ".sqlite3": "SQL",
+    ".jsonc": "JSON", ".json5": "JSON",
+    ".yml": "YAML",
+    ".toml": "INI",
+    ".conf": "System config", ".inf": "System config",
+    ".env": "System config",
+    ".rake": "Ruby",
+}
+EXTENSION_ALIASES.update(EXTENSION_CATEGORIES)
+
+
+def supported_extensions_filter():
+    """Generate a file filter string for QFileDialog with all supported extensions."""
+    category_to_exts = {}
+    for ext, category in EXTENSION_ALIASES.items():
+        if category not in category_to_exts:
+            category_to_exts[category] = []
+        category_to_exts[category].append(ext)
+    
+    filters = []
+    for category in sorted(category_to_exts.keys()):
+        exts = sorted(category_to_exts[category])
+        filter_str = f"{category} files ({' '.join(exts)})"
+        filters.append(filter_str)
+    
+    filters.append("All files (*.*)")
+    return ";;".join(filters)
+
+
+def get_interpreter_path(language, settings=None):
+    """Get the interpreter path for a given language.
+    
+    First checks custom settings, then falls back to shutil.which.
+    Returns None if no interpreter is found.
+    """
+    lang_map = {
+        "python": "python",
+        "py": "python",
+        "bash": "bash",
+        "sh": "bash",
+        "shell": "bash",
+        "powershell": "powershell",
+        "pwsh": "powershell",
+        "javascript": "node",
+        "js": "node",
+        "node": "node",
+        "batch": "batch",
+        "bat": "batch",
+        "cmd": "batch",
+        "vbscript": "vbscript",
+        "vbs": "vbscript"
+    }
+    normalized = lang_map.get(language.lower(), language.lower())
+    
+    if settings is None:
+        try:
+            import sdb
+            settings = sdb.load_settings(sdb.SETTINGS_FILE, None)
+        except:
+            settings = {}
+    
+    interpreters = settings.get("interpreters", {})
+    custom_path = interpreters.get(normalized, "")
+    if custom_path and os.path.exists(custom_path):
+        return custom_path
+    
+    if normalized == "python":
+        return shutil.which("python") or shutil.which("python3")
+    elif normalized == "bash":
+        return shutil.which("bash")
+    elif normalized == "powershell":
+        return shutil.which("pwsh") or shutil.which("powershell")
+    elif normalized == "node":
+        return shutil.which("node") or shutil.which("nodejs")
+    elif normalized == "batch":
+        return "cmd.exe" if sys.platform == "win32" else None
+    elif normalized == "vbscript":
+        return "cscript.exe" if sys.platform == "win32" else None
+    
+    return None
 # Language support lives in tabs/syntax/: one hot-pluggable module per
 # language, wired together by the registry (see tabs/syntax/__init__.py).
 from . import code_generator
@@ -555,27 +673,68 @@ class LineNumberArea(QtWidgets.QWidget):
 class CodeMinimap(QtWidgets.QWidget):
     """A narrow, ASCII-friendly overview of the whole document. Each line becomes one clickable row: the current line is marked and the viewport (the lines visible in the editor) is highlighted, so the minimap doubles as a scrollbar. It renders without images, so it works in low-graphics mode too."""
 
-    WIDTH = 90
+    DEFAULT_WIDTH = 90
+    MIN_WIDTH = 60
+    MAX_WIDTH = 200
 
-    def __init__(self, editor):
+    def __init__(self, editor, width=None):
         super().__init__(editor)
         self.editor = editor
-        self.setFixedWidth(self.WIDTH)
+        self._width = width if width is not None else self.DEFAULT_WIDTH
+        self.setFixedWidth(self._width)
         self.setSizePolicy(QtWidgets.QSizePolicy.Fixed,
                            QtWidgets.QSizePolicy.Expanding)
-        self.setToolTip("Minimap (click to jump)")
+        self.setToolTip("Minimap (click to jump, drag to scroll)")
         self.setCursor(QtCore.Qt.PointingHandCursor)
+        self._dragging = False
+        self._drag_start_y = 0
+        self._drag_start_line = 0
+        self._cached_lines = None
+        self._cache_timestamp = 0
+        self._last_line_count = 0
+        self._hover_line = -1
+        self.setMouseTracking(True)
+        self._scroll_timer = QtCore.QTimer(self)
+        self._scroll_timer.setSingleShot(True)
+        self._scroll_timer.timeout.connect(self._smooth_scroll)
+        self._target_line = None
+
+    def set_width(self, width):
+        """Set the minimap width (clamped to MIN_WIDTH and MAX_WIDTH)."""
+        self._width = max(self.MIN_WIDTH, min(self.MAX_WIDTH, width))
+        self.setFixedWidth(self._width)
+        self.update()
+
+    def width(self):
+        """Return the current minimap width."""
+        return self._width
 
     def refresh(self):
+        self._invalidate_cache()
         self.update()
+
+    def _invalidate_cache(self):
+        """Invalidate the cached line data."""
+        self._cached_lines = None
+        self._last_line_count = 0
+
+    def _get_lines(self):
+        """Get lines with caching to avoid repeated string splits."""
+        current_line_count = self.editor.blockCount()
+        if (self._cached_lines is None or 
+            current_line_count != self._last_line_count):
+            self._cached_lines = self.editor.toPlainText().split("\n")
+            self._last_line_count = current_line_count
+        return self._cached_lines
 
     def paintEvent(self, event):
         theme = self.editor.theme()
         painter = QtGui.QPainter(self)
+        painter.setRenderHint(QtGui.QPainter.Antialiasing, False)
         try:
             painter.fillRect(self.rect(), QtGui.QColor(theme.get(
                 "minimap_bg", "#181818")))
-            lines = self.editor.toPlainText().split("\n")
+            lines = self._get_lines()
             total = max(1, len(lines))
             height = max(1, self.height())
             row_h = max(1.0, height / total)
@@ -585,29 +744,94 @@ class CodeMinimap(QtWidgets.QWidget):
             visible = self.editor.visible_block_count()
             band_top = int(first * row_h)
             band_h = max(2, int(visible * row_h))
-            painter.fillRect(0, band_top, self.WIDTH, band_h,
+            painter.fillRect(0, band_top, self._width, band_h,
                              QtGui.QColor(theme.get("current_line", "#2a2d2e")))
             painter.setPen(QtGui.QPen(fg, 1))
-            for index, line in enumerate(lines):
+            
+            # Only draw lines that are visible in the viewport for performance
+            visible_start = max(0, first - 10)
+            visible_end = min(total, first + visible + 10)
+            
+            for index in range(visible_start, visible_end):
+                if index >= len(lines):
+                    break
+                line = lines[index]
                 if not line.strip():
                     continue
                 y = int(index * row_h)
-                width = min(self.WIDTH - 4, max(2, int(len(line) * 0.9)))
+                width = min(self._width - 4, max(2, int(len(line) * 0.9)))
                 painter.drawLine(2, y, 2 + width, y)
+            
             # Mark the current line.
             current = self.editor.textCursor().blockNumber()
-            painter.fillRect(0, int(current * row_h), self.WIDTH,
+            painter.fillRect(0, int(current * row_h), self._width,
                              max(1, int(row_h)),
                              QtGui.QColor(theme.get("minimap_hit", "#8ab4f8")))
+            
+            # Mark the hovered line with a subtle highlight.
+            if self._hover_line >= 0 and self._hover_line != current:
+                hover_color = QtGui.QColor(theme.get("minimap_hit", "#8ab4f8"))
+                hover_color.setAlpha(80)
+                painter.fillRect(0, int(self._hover_line * row_h), self._width,
+                               max(1, int(row_h)), hover_color)
         finally:
             painter.end()
 
+    def _smooth_scroll(self):
+        """Perform smooth scroll to target line."""
+        if self._target_line is not None:
+            self.editor.goto_line(self._target_line)
+            self._target_line = None
+
     def mousePressEvent(self, event):
-        lines = self.editor.toPlainText().split("\n")
+        """Handle mouse press - start drag or jump to line."""
+        lines = self._get_lines()
         total = max(1, len(lines))
         ratio = event.pos().y() / max(1, self.height())
         line = max(0, min(total - 1, int(ratio * total)))
-        self.editor.goto_line(line)
+        
+        if event.button() == QtCore.Qt.LeftButton:
+            self._dragging = True
+            self._drag_start_y = event.pos().y()
+            self._drag_start_line = line
+            self._hover_line = -1
+            self._target_line = line
+            self._scroll_timer.start(50)
+        else:
+            self.editor.goto_line(line)
+
+    def mouseMoveEvent(self, event):
+        """Handle mouse move - scroll if dragging or update hover."""
+        lines = self._get_lines()
+        total = max(1, len(lines))
+        ratio = event.pos().y() / max(1, self.height())
+        line = max(0, min(total - 1, int(ratio * total)))
+        
+        if self._dragging:
+            self._target_line = line
+            self._scroll_timer.start(16)
+        else:
+            if line != self._hover_line:
+                self._hover_line = line
+                self.update()
+
+    def mouseReleaseEvent(self, event):
+        """Handle mouse release - stop dragging."""
+        if event.button() == QtCore.Qt.LeftButton:
+            self._dragging = False
+            self._scroll_timer.stop()
+            self._target_line = None
+
+    def leaveEvent(self, event):
+        """Handle leaving the widget - stop dragging and clear hover."""
+        self._dragging = False
+        self._hover_line = -1
+        self.update()
+
+    def enterEvent(self, event):
+        """Handle entering the widget - reset hover state."""
+        self._hover_line = -1
+        super().enterEvent(event)
 BUILTIN_TYPES = ("int", "float", "str", "bool", "list", "dict", "set",
                  "tuple", "bytes", "object", "None", "Any", "Optional",
                  "List", "Dict", "Set", "Tuple", "Callable")
@@ -1115,6 +1339,7 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
             painter.end()
 
     def _on_text_changed(self):
+        self._minimap._invalidate_cache()
         self._minimap.update()
 
     # ----------------------------------------------------------- highlight
@@ -1259,6 +1484,76 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         if key == QtCore.Qt.Key_Space and modifiers & QtCore.Qt.ControlModifier:
             self.show_suggestions(force=True)
             return
+        # Ctrl+/: toggle a comment on the selected lines (like an IDE).
+        if key == QtCore.Qt.Key_Slash and modifiers & QtCore.Qt.ControlModifier:
+            self.toggle_comment()
+            return
+
+    # ------------------------------------------------------- comment toggling
+    def toggle_comment(self):
+        """Add/remove the language's comment marker on the selected lines.
+
+        When the selection is empty the cursor's own line is toggled. When
+        several lines are selected, the selection is widened to whole lines and
+        all of them are toggled together: if none of them carries a marker yet
+        they are all commented, otherwise the marker is removed from every
+        line that has one (a standard IDE behaviour).
+        """
+        marker = _comment_marker(self._category) or "#"
+        pad = " " if marker != "#" else " "
+        document = self.document()
+        cursor = self.textCursor()
+
+        # Widen the selection to cover whole lines.
+        start_block = document.findBlock(cursor.selectionStart())
+        end_block = document.findBlock(max(cursor.selectionEnd(), cursor.position()))
+        if cursor.hasSelection() and cursor.selectionStart() == cursor.selectionEnd():
+            # A zero-length selection inside a word still means "this line".
+            end_block = start_block
+
+        blocks = []
+        block = start_block
+        while True:
+            blocks.append(block)
+            if block == end_block or not block.isValid():
+                break
+            block = block.next()
+        lines = [(b.blockNumber(), b.text()) for b in blocks if b.isValid()]
+        if not lines:
+            return
+
+        marked = [text.lstrip().startswith(marker) for _, text in lines]
+        comment_out = not any(marked)
+
+        cursor.beginEditBlock()
+        try:
+            for block_number, text in reversed(lines):
+                block = document.findBlockByNumber(block_number)
+                if not block.isValid():
+                    continue
+                line_cursor = QtGui.QTextCursor(block)
+                if comment_out:
+                    indent = len(text) - len(text.lstrip())
+                    line_cursor.setPosition(block.position() + indent)
+                    line_cursor.insertText(marker + pad)
+                else:
+                    index = text.find(marker)
+                    if index < 0:
+                        continue
+                    start = block.position() + index
+                    end = start + len(marker)
+                    # Swallow one space after the marker, so un-commenting
+                    # restores the original indentation.
+                    if end < len(text) and text[end] == " ":
+                        end += 1
+                    line_cursor.setPosition(start)
+                    line_cursor.setPosition(end, QtGui.QTextCursor.KeepAnchor)
+                    line_cursor.removeSelectedText()
+        finally:
+            cursor.endEditBlock()
+
+    def keyPressEvent_ignored(self):
+        pass
         if key == QtCore.Qt.Key_Escape and self._completer is not None:
             self._completer.popup().hide()
         # Enter: keep the indentation, and indent after a block opener.
@@ -2451,7 +2746,7 @@ class EditorTab(QtWidgets.QWidget):
     def _integration_runner(self):
         entry = self._live_entry()
         try:
-            from sdb_scripts import RunScriptDialog
+            from sdb import RunScriptDialog
             RunScriptDialog(self, entry.get("name", "Untitled"), entry.get("code", ""),
                             entry.get("category", "Python"), self.t).exec_()
             return self._integration_status("editor_integration_opened", "opened in Runner")
@@ -3294,7 +3589,7 @@ class EditorTab(QtWidgets.QWidget):
         self._access_log.append({"time": _now(), "path": path, "action": "read"})
         return path
     def _workspace_open_file(self):
-        path, _ = QtWidgets.QFileDialog.getOpenFileName(self, self.t("editor_workspace_open", "Open file"), "", "All files (*.*)")
+        path, _ = QtWidgets.QFileDialog.getOpenFileName(self, self.t("editor_workspace_open", "Open file"), "", supported_extensions_filter())
         return self._open_workspace_path(path) if path else None
     def _workspace_recent_files(self):
         return self._show_choices(self._recent_files, self._open_workspace_path, "editor_workspace_recent_files")
@@ -4207,7 +4502,7 @@ class EditorTab(QtWidgets.QWidget):
         """Export the current buffer as a plain source file."""
         ext = ".txt"
         try:
-            from sdb_scripts import extension_for_category
+            from sdb import extension_for_category
             script = self._find_script(self.script_id)
             if script is not None:
                 ext = extension_for_category(script.get("category", ""))
@@ -4229,10 +4524,10 @@ class EditorTab(QtWidgets.QWidget):
 
     def _data_dir(self):
         base = getattr(self.window, "base_dir", None) or getattr(
-            self.window, "DATA_DIR", None)
+            self.window, "BASE_DIR", None)
         if base:
             return base
-        return app_paths.ensure_data_dir()
+        return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
     # ------------------------------------------------------- translation
     def retranslate(self, table):

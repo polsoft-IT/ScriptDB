@@ -28,8 +28,6 @@ import hashlib
 import json
 import os
 
-import app_paths
-
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtGui import QFont
 
@@ -382,7 +380,9 @@ class _HeadlessAudit(object):
     """
 
     def __init__(self, base_dir=None):
-        base = base_dir or app_paths.ensure_db_dir()
+        base = base_dir
+        if not base:
+            base = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         self.base_dir = base
 
     # --- data ----------------------------------------------------------
@@ -548,14 +548,14 @@ class AuditTab(QtWidgets.QWidget):
         return self.window.t(key, fallback, **kwargs)
 
     def _data_dir(self):
-        """Directory holding the audit snapshot (the databases folder)."""
-        base = getattr(self.window, "db_dir", None)
+        """Directory holding the audit snapshot (next to the script database)."""
+        base = getattr(self.window, "base_dir", None)
         if base:
             return base
-        base_dir = getattr(self.window, "DB_DIR", None)
+        base_dir = getattr(self.window, "BASE_DIR", None)
         if base_dir:
             return base_dir
-        return app_paths.ensure_db_dir()
+        return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
     def _audit_path(self):
         return os.path.join(self._data_dir(), AUDIT_FILE)

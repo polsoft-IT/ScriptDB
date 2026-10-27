@@ -3,33 +3,13 @@
 REPO_MAP.md
 .aider/
 
-# Local scratch / profiling artifacts (leading-underscore files in repo root)
-_*.py
-_*.txt
-*.zip
-
-# Python cache / test cache
+# Python caches
 __pycache__/
 *.pyc
 .pytest_cache/
 
-# Generated at runtime
-code_flow_report.txt
-code_flow_views.txt
-sysinfo_*.txt
-reports/
-exports/
-
-# User data & runtime databases (never commit real data)
-*_db.json
-batch_templates.json
-audit_timeline.json
-docs_db.sqlite
-
-# Vault: encrypted store + its config (secrets)
-vault/
-vault.json
-
-# Security tab: local backups and generated reports
-security/backups/
-security/reports/
+# Test/debug leftovers
+crash*.txt
+*_out.txt
+test_folder/
+/.dev
