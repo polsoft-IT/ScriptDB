@@ -13,3 +13,4 @@ crash*.txt
 *_out.txt
 test_folder/
 /.dev
+.andromity/
