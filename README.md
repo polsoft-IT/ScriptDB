@@ -1,7 +1,3 @@
-<p align="center">
-  <img src="screenshot.png" alt="ScriptDB screenshot" />
-</p>
-
 # ScriptDB
 
 > A self-contained PyQt5 desktop application for storing, editing, searching,
